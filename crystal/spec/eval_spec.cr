@@ -1,7 +1,7 @@
 require "./spec_helper"
 
 describe Evaluator do
-  describe BaseValue do
+  describe Value do
     it "evaluates empty statements" do
       result = eval("")
       result.should be_a NullValue
