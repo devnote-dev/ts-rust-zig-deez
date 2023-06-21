@@ -1,54 +1,56 @@
-struct Token
-  enum Type
-    Eof
-    Illegal
+module Monkey
+  struct Token
+    enum Type
+      Eof
+      Illegal
 
-    # identifiers
-    Ident
-    Integer
-    String
+      # identifiers
+      Ident
+      Integer
+      String
 
-    # operators
-    Assign
-    Equal
-    NotEqual
-    Plus
-    Minus
-    Bang
-    Asterisk
-    Slash
-    GreaterThan
-    LessThan
+      # operators
+      Assign
+      Equal
+      NotEqual
+      Plus
+      Minus
+      Bang
+      Asterisk
+      Slash
+      GreaterThan
+      LessThan
 
-    # delimiters
-    Comma
-    Semicolon
-    LeftCurly
-    RightCurly
-    LeftSquirly
-    RightSquirly
+      # delimiters
+      Comma
+      Semicolon
+      LeftCurly
+      RightCurly
+      LeftSquirly
+      RightSquirly
 
-    # keywords
-    Function
-    Let
-    True
-    False
-    If
-    Else
-    Return
-  end
+      # keywords
+      Function
+      Let
+      True
+      False
+      If
+      Else
+      Return
+    end
 
-  getter type : Type
-  @value : String?
+    getter type : Type
+    @value : String?
 
-  def initialize(@type, @value = nil)
-  end
+    def initialize(@type, @value = nil)
+    end
 
-  def value : String
-    @value.as(String)
-  end
+    def value : String
+      @value.as(String)
+    end
 
-  def ==(other : Token) : Bool
-    @type == other.type
+    def ==(other : Token) : Bool
+      @type == other.type
+    end
   end
 end

@@ -1,3 +1,3 @@
 require "./src/*"
 
-init_repl
+Monkey.init_repl

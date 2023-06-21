@@ -1,7 +1,7 @@
-module Evaluator
+module Monkey::Evaluator
   extend self
 
-  def evaluate(node : Program, scope : Scope) : BaseValue
+  def evaluate(node : Program, scope : Scope) : Value
     result = NullValue.new
 
     node.statements.each do |statement|
@@ -11,42 +11,42 @@ module Evaluator
     result
   end
 
-  def evaluate(node : Node, scope : Scope) : BaseValue
+  def evaluate(node : Node, scope : Scope) : Value
     evaluate node, scope
   end
 
-  def evaluate(node : Statement, scope : Scope) : BaseValue
+  def evaluate(node : Statement, scope : Scope) : Value
     evaluate node, scope
   end
 
-  def evaluate(node : Expression, scope : Scope) : BaseValue
+  def evaluate(node : Expression, scope : Scope) : Value
     evaluate node, scope
   end
 
-  def evaluate(node : ExpressionStatement, scope : Scope) : BaseValue
+  def evaluate(node : ExpressionStatement, scope : Scope) : Value
     evaluate node.expression, scope
   end
 
-  def evaluate(node : Identifier, scope : Scope) : BaseValue
+  def evaluate(node : Identifier, scope : Scope) : Value
     value = scope.get node.value
     return ErrorValue.new "undefined variable '#{node.value}'" if value.nil?
 
     value
   end
 
-  def evaluate(node : IntegerLiteral, scope : Scope) : BaseValue
+  def evaluate(node : IntegerLiteral, scope : Scope) : Value
     IntegerValue.new node.value
   end
 
-  def evaluate(node : StringLiteral, scope : Scope) : BaseValue
+  def evaluate(node : StringLiteral, scope : Scope) : Value
     StringValue.new node.value
   end
 
-  def evaluate(node : BooleanLiteral, scope : Scope) : BaseValue
+  def evaluate(node : BooleanLiteral, scope : Scope) : Value
     BooleanValue.new node.value?
   end
 
-  def evaluate(node : If, scope : Scope) : BaseValue
+  def evaluate(node : If, scope : Scope) : Value
     condition = evaluate node.condition, scope
     return condition if condition.is_a? ErrorValue
 
@@ -61,11 +61,11 @@ module Evaluator
     NullValue.new
   end
 
-  def evaluate(node : FunctionLiteral, scope : Scope) : BaseValue
+  def evaluate(node : FunctionLiteral, scope : Scope) : Value
     FunctionValue.new node.parameters, node.body, scope
   end
 
-  def evaluate(node : Call, scope : Scope) : BaseValue
+  def evaluate(node : Call, scope : Scope) : Value
     function = evaluate node.function, scope
     return function if function.is_a? ErrorValue
 
@@ -99,7 +99,7 @@ module Evaluator
     end
   end
 
-  def evaluate(node : Prefix, scope : Scope) : BaseValue
+  def evaluate(node : Prefix, scope : Scope) : Value
     right = evaluate node.right, scope
     return right if right.is_a? ErrorValue
 
@@ -121,7 +121,7 @@ module Evaluator
     end
   end
 
-  def evaluate(node : Infix, scope : Scope) : BaseValue
+  def evaluate(node : Infix, scope : Scope) : Value
     left = evaluate node.left, scope
     return left if left.is_a? ErrorValue
 
@@ -135,7 +135,7 @@ module Evaluator
     evaluate_infix left, node.operator, right
   end
 
-  def evaluate(node : Let, scope : Scope) : BaseValue
+  def evaluate(node : Let, scope : Scope) : Value
     value = evaluate node.value, scope
     return value if value.is_a? ErrorValue
 
@@ -144,7 +144,7 @@ module Evaluator
     value
   end
 
-  def evaluate(node : Return, scope : Scope) : BaseValue
+  def evaluate(node : Return, scope : Scope) : Value
     if inner = node.value
       value = evaluate inner, scope
       return value if value.is_a? ErrorValue
@@ -155,7 +155,7 @@ module Evaluator
     end
   end
 
-  def evaluate(node : Block, scope : Scope) : BaseValue
+  def evaluate(node : Block, scope : Scope) : Value
     result = NullValue.new
 
     node.statements.each do |statement|
@@ -166,7 +166,7 @@ module Evaluator
     result
   end
 
-  def evaluate_infix(left : IntegerValue, operator : Infix::Operator, right : IntegerValue) : BaseValue
+  def evaluate_infix(left : IntegerValue, operator : Infix::Operator, right : IntegerValue) : Value
     case operator
     in .equal?
       BooleanValue.new(left.value == right.value)
@@ -198,7 +198,7 @@ module Evaluator
     ErrorValue.new "arithmetic overflow"
   end
 
-  def evaluate_infix(left : StringValue, operator : Infix::Operator, right : StringValue) : BaseValue
+  def evaluate_infix(left : StringValue, operator : Infix::Operator, right : StringValue) : Value
     if operator.add?
       StringValue.new(left.value + right.value)
     else
@@ -206,7 +206,7 @@ module Evaluator
     end
   end
 
-  def evaluate_infix(left : BooleanValue, operator : Infix::Operator, right : BooleanValue) : BaseValue
+  def evaluate_infix(left : BooleanValue, operator : Infix::Operator, right : BooleanValue) : Value
     case operator
     when .equal?
       BooleanValue.new(left.value? == right.value?)
@@ -217,19 +217,19 @@ module Evaluator
     end
   end
 
-  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : BaseValue) : BaseValue
+  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : Value) : Value
     evaluate_infix left.value, operator, right
   end
 
-  def evaluate_infix(left : BaseValue, operator : Infix::Operator, right : ReturnValue) : BaseValue
+  def evaluate_infix(left : Value, operator : Infix::Operator, right : ReturnValue) : Value
     evaluate_infix left, operator, right.value
   end
 
-  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : ReturnValue) : BaseValue
+  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : ReturnValue) : Value
     evaluate_infix left.value, operator, right.value
   end
 
-  def evaluate_infix(left : BaseValue, operator : Infix::Operator, right : BaseValue) : BaseValue
+  def evaluate_infix(left : Value, operator : Infix::Operator, right : Value) : Value
     ErrorValue.new "unknown operator '#{operator}' for types #{left.type} and #{right.type}"
   end
 end
