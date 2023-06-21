@@ -125,7 +125,6 @@ module Monkey
     end
   end
 
-  # TODO: get around cyclical reference so that these can be structs
   class ReturnValue < Value
     getter value : Value
 

@@ -217,19 +217,19 @@ module Monkey::Evaluator
     end
   end
 
-  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : Value) : Value
+  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : Monkey::Value) : Monkey::Value
     evaluate_infix left.value, operator, right
   end
 
-  def evaluate_infix(left : Value, operator : Infix::Operator, right : ReturnValue) : Value
+  def evaluate_infix(left : Monkey::Value, operator : Infix::Operator, right : ReturnValue) : Monkey::Value
     evaluate_infix left, operator, right.value
   end
 
-  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : ReturnValue) : Value
+  def evaluate_infix(left : ReturnValue, operator : Infix::Operator, right : ReturnValue) : Monkey::Value
     evaluate_infix left.value, operator, right.value
   end
 
-  def evaluate_infix(left : Value, operator : Infix::Operator, right : Value) : Value
+  def evaluate_infix(left : Monkey::Value, operator : Infix::Operator, right : Monkey::Value) : Monkey::Value
     ErrorValue.new "unknown operator '#{operator}' for types #{left.type} and #{right.type}"
   end
 end
